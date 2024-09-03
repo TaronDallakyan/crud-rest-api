@@ -48,14 +48,18 @@ export const createProduct = async (
   res: Response
 ): Promise<void> => {
   try {
-    const newProduct: Product = req.body;
+    const payload: Product = req.body;
 
-    if (newProduct.stock.available < 0 || newProduct.price <= 0) {
+    if (payload.stock.available < 0 || payload.price <= 0) {
       res.status(400).json({ message: "Invalid stock or price" });
       return;
     }
 
     const products = await readProducts();
+    const id = products.length;
+
+    const newProduct = { ...payload, deleted: false, id: String(id) };
+
     products.push(newProduct);
     await writeProducts(products);
 
